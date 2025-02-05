@@ -6,8 +6,9 @@ import {
   Scripts,
   Outlet,
   ScrollRestoration,
+  Link,
 } from "@remix-run/react";
-import appStylesHref from "./app.css";
+import appStylesHref from "./app.css?url";
 
 /**
  * Every route can export a links function. They will be collected and rendered into the <Links /> component we rendered in app/root.tsx.
@@ -46,10 +47,10 @@ export default function App() {
           <nav>
             <ul>
               <li>
-                <a href={`/contacts/1`}>Your Name</a>
+                <Link to={`/contacts/1`}>Your Name</Link>
               </li>
               <li>
-                <a href={`/contacts/2`}>Your Friend</a>
+                <Link to={`/contacts/2`}>Your Friend</Link>
               </li>
             </ul>
           </nav>
