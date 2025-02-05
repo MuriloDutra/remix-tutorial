@@ -4,6 +4,7 @@ import {
   Links,
   Meta,
   Scripts,
+  Outlet,
   ScrollRestoration,
 } from "@remix-run/react";
 import appStylesHref from "./app.css";
@@ -53,7 +54,14 @@ export default function App() {
             </ul>
           </nav>
         </div>
-
+        <div id="detail">
+          {/**
+           * Since Remix is built on top of React Router, it supports nested routing.
+           * In order for child routes to render inside of parent layouts,
+           * we need to render an Outlet in the parent.
+           */}
+          <Outlet />
+        </div>
         <ScrollRestoration />
         <Scripts />
       </body>
