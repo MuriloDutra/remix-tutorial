@@ -1,3 +1,4 @@
+import { LinksFunction } from "@remix-run/node";
 import {
   Form,
   Links,
@@ -5,6 +6,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import appStylesHref from "./app.css";
+
+/**
+ * Every route can export a links function. They will be collected and rendered into the <Links /> component we rendered in app/root.tsx.
+ */
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: appStylesHref },
+];
 
 export default function App() {
   return (
