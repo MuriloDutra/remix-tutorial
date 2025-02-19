@@ -1,4 +1,4 @@
-import { LinksFunction, redirect } from "@remix-run/node";
+import { LinksFunction, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import {
   Form,
   Links,
@@ -13,8 +13,10 @@ import {
 import appStylesHref from "./app.css?url";
 import { createEmptyContact, getContacts } from "./data";
 
-export const loader = async () => {
-  const contacts = await getContacts();
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q");
+  const contacts = await getContacts(query);
   return Response.json({ contacts });
 };
 
