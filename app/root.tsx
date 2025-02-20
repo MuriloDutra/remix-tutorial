@@ -9,15 +9,17 @@ import {
   NavLink,
   useLoaderData,
   useNavigation,
+  useSubmit,
 } from "@remix-run/react";
 import appStylesHref from "./app.css?url";
 import { createEmptyContact, getContacts } from "./data";
+import { useEffect } from "react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
   const contacts = await getContacts(query);
-  return Response.json({ contacts });
+  return Response.json({ contacts, query });
 };
 
 export const action = async () => {
@@ -33,8 +35,18 @@ export const links: LinksFunction = () => [
 ];
 
 export default function App() {
-  const { contacts } = useLoaderData<typeof loader>();
+  const { contacts, query } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const searching =
+    navigation.location &&
+    new URLSearchParams(navigation.location.search).has("q");
+
+  useEffect(() => {
+    const searchField = document.getElementById("q");
+    if (searchField instanceof HTMLInputElement)
+      searchField.value = query || "";
+  }, [query]);
 
   return (
     <html lang="en">
@@ -48,15 +60,24 @@ export default function App() {
         <div id="sidebar">
           <h1>Remix Contacts</h1>
           <div>
-            <Form id="search-form" role="search">
+            <Form
+              id="search-form"
+              role="search"
+              onChange={(event) => {
+                const isFirstSearch = query === null;
+                submit(event.currentTarget, { replace: !isFirstSearch });
+              }}
+            >
               <input
                 id="q"
                 aria-label="Search contacts"
                 placeholder="Search"
+                className={searching ? "loading" : ""}
                 type="search"
                 name="q"
+                defaultValue={query || ""}
               />
-              <div id="search-spinner" aria-hidden hidden={true} />
+              <div id="search-spinner" aria-hidden hidden={!searching} />
             </Form>
             <Form method="post">
               <button type="submit">New</button>
@@ -94,7 +115,9 @@ export default function App() {
         </div>
         <div
           id="detail"
-          className={navigation.state == "loading" ? "loading" : ""}
+          className={
+            navigation.state == "loading" && !searching ? "loading" : ""
+          }
         >
           {/**
            * Since Remix is built on top of React Router, it supports nested routing.
